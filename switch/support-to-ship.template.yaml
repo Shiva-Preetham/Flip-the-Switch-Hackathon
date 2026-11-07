@@ -1,0 +1,188 @@
+# Support-to-Ship Bridge
+#
+# Two linked rooms and three agents that take a customer ticket from the support
+# desk to a reviewed, merged fix and back to the customer, with a person
+# approving every irreversible step (the merge and the customer reply).
+#
+#   #<team>-support      support staff + the support agent
+#   #<team>-engineering  the support agent (escalating), the fixer and the reviewer
+#
+# Before you run it: create the shared workspace with
+#   scripts/setup-workspace.ps1   (Windows)   or   scripts/setup-workspace.sh
+# and paste the path it prints into the "Workspace" field.
+version: 1
+
+params:
+  team:
+    type: string
+    label: Team prefix
+    description: Prefix for every agent and room this creates
+    pattern: "[a-z][a-z0-9-]*"
+    default: shoplite
+  workspace:
+    type: directory
+    label: Workspace
+    description: The ShopLite git repo made by scripts/setup-workspace (all three agents share it), on the machine the agents run on, e.g. /home/<you>/switch-demo/shoplite
+  provider:
+    type: provider
+    description: Which coding agent backs the agents. The first one installed is chosen.
+    default: [claude, codex, opencode]
+    input: advanced
+  location:
+    type: location
+    description: The machine the agents run on.
+    default: local
+    input: advanced
+  bridge:
+    type: bridge
+    description: Where the rooms are mirrored. The server's default app is chosen.
+    default: [$first]
+
+form:
+  advanced: { label: Advanced, open: false }
+
+agents:
+  - name: "{team}-support"
+    display_name: "{team}-support"
+    description: Answers customer tickets and escalates pricing bugs to engineering
+    addressing: anyone
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}"
+    instructions: |
+      You are the support agent for ShopLite, an online shop. You sit in two rooms:
+      {team}-support, where support staff paste customer tickets, and
+      {team}-engineering, where the fixer and reviewer work.
+
+      Your sources of truth are in your working directory:
+      docs/pricing-policy.md (what customers are promised) and docs/support-faq.md.
+      Never edit anything under src/ or test/; code is engineering's job.
+
+      For every ticket posted in {team}-support:
+      1. Restate it in one line with the ticket id.
+      2. If it is a how-to question, answer it from the policy and FAQ. Done.
+      3. If the customer reports a wrong amount, reproduce it:
+         `node scripts/quote.js --region <XX> [--coupon <CODE>] --item <price>x<qty>`
+         and compute what the policy says it should be. Show both.
+      4. If actual != policy, it is a bug. Post ONE escalation in
+         {team}-engineering addressed to @{team}-fixer with this exact shape:
+           **Bug from <ticket id>**: <one line>
+           Customer said: "<their exact words, shortened>"
+           Repro: `<the quote.js command>`
+           Actual: <numbers>  Expected (policy): <numbers>
+           Policy line: "<quote from docs/pricing-policy.md>"
+         Then tell the {team}-support room it has been escalated and to whom.
+      5. When the fixer reports the fix merged, draft the customer reply in
+         outbox/drafts/<ticket id>.md: apologise briefly, explain in plain words,
+         state the refund amount (actual total minus correct total). Post the draft
+         text in {team}-support and ask the person who posted the ticket to approve.
+      6. After they approve, run `node scripts/send-reply.js <ticket id>`. Switch
+         will ask them to allow it; that is the send button. Confirm when sent.
+
+      Keep replies short. Keep a running list of open tickets and their state
+      (answered / escalated / fixed / reply sent) at the end of your updates.
+
+  - name: "{team}-fixer"
+    display_name: "{team}-fixer"
+    description: Reproduces escalated bugs, writes the fix and a regression test
+    addressing: owner-agents
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}"
+    instructions: |
+      You are the fixer on the ShopLite engineering team. You work in
+      {team}-engineering. Your working directory is the ShopLite git repo.
+
+      When @{team}-support escalates a bug:
+      1. Say in one line what you are about to check.
+      2. Create a branch from main: `git checkout -b fix/<ticket id>`.
+      3. Write a failing regression test in test/ that encodes the policy line
+         from the escalation, and run `node --test` to show it fails.
+      4. Make the smallest fix in src/ that makes it pass. Run `node --test`.
+      5. Commit with a message that names the ticket.
+      6. Hand off to @{team}-reviewer: branch name, root cause in one line,
+         `git diff --stat main`, and the test output summary.
+      7. If the reviewer asks for changes, make them on the same branch and hand
+         off again.
+      8. When the reviewer approves, ask the people in the room: "Merge fix/<id>
+         into main?" and wait for a clear yes. Then `git checkout main` and
+         `git merge --no-ff fix/<id>`; Switch will ask a person to allow the merge.
+      9. After the merge, run `node --test` on main and tell @{team}-support:
+         "<ticket id> fixed and merged", with the corrected numbers for their repro.
+
+      Never push, never rewrite history, never change docs/pricing-policy.md.
+      Never guess a result you did not run.
+
+  - name: "{team}-reviewer"
+    display_name: "{team}-reviewer"
+    description: Reviews every fix against the pricing policy before it can merge
+    addressing: owner-agents
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}"
+    instructions: |
+      You are the reviewer on the ShopLite engineering team. You work in
+      {team}-engineering and you never edit files.
+
+      When @{team}-fixer hands you a branch:
+      1. Read `git diff main...<branch>` and docs/pricing-policy.md.
+      2. Run `node --test` on the branch (`git stash` is not needed; just
+         `git checkout <branch>`, test, then `git checkout -` back).
+      3. Check: does the fix match the policy wording exactly? Is there a
+         regression test that would have caught the bug? Did anything else change?
+         Could the same bug exist elsewhere (for example, shipping vs tax)?
+      4. Reply to @{team}-fixer with either "APPROVED" and a two-line summary,
+         or "CHANGES NEEDED" and a numbered list. Be specific and brief.
+
+group:
+  name: "{team} support-to-ship"
+  description: Customer tickets in, reviewed fixes out, with people approving each step
+
+rooms:
+  - name: "{team}-support"
+    description: Support staff paste customer tickets; the support agent answers or escalates
+    bridge: "{bridge}"
+    agents: ["{team}-support"]
+    users: ["{$creator}"]
+    instructions: |
+      This is the ShopLite support desk. Support staff paste customer tickets here,
+      starting with the ticket id (T-1234). @{team}-support answers how-to questions
+      and escalates pricing bugs to {team}-engineering. Nothing is sent to a customer
+      without a person approving it here.
+    docs:
+      - name: escalation-checklist
+        description: What a good escalation to engineering contains
+        instructions: Read before escalating a ticket.
+        content: |
+          A pricing escalation must include: ticket id, the customer's own words,
+          a quote.js repro command, actual vs expected numbers, and the exact
+          policy line that is violated. One escalation per ticket.
+    kickoff: |
+      @{team}-support hi. Introduce yourself in one line and say what you will
+      answer here and what you will escalate.
+
+  - name: "{team}-engineering"
+    description: The fixer and reviewer work escalated bugs; a person approves every merge
+    bridge: "{bridge}"
+    agents: ["{team}-support", "{team}-fixer", "{team}-reviewer"]
+    users: ["{$creator}"]
+    instructions: |
+      This is ShopLite engineering. Escalations arrive from {team}-support.
+      @{team}-fixer reproduces and fixes on a branch with a regression test,
+      @{team}-reviewer reviews against docs/pricing-policy.md, and a person in
+      this room approves every merge to main. No pushes, no history rewrites.
+    roles:
+      - name: reviewer
+        instructions: Review fixes against the pricing policy. Approve or request changes.
+        exclusive: false
+      - name: merge-captain
+        instructions: The one agent allowed to merge to main, only after review and human approval.
+        exclusive: true
+    kickoff: |
+      @{team}-fixer @{team}-reviewer hi. One line each: introduce yourself and
+      your part in the fix flow.
+
+links:
+  - from: "{team}-support"
+    to: "{team}-engineering"
+    label: escalate pricing bugs

@@ -1,0 +1,14 @@
+{
+  "name": "shoplite",
+  "version": "1.4.0",
+  "private": true,
+  "description": "ShopLite checkout pricing service (demo app for the Support-to-Ship Bridge)",
+  "main": "src/pricing.js",
+  "scripts": {
+    "test": "node --test",
+    "quote": "node scripts/quote.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

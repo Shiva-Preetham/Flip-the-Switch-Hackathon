@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(git merge:*)",
+      "Bash(git merge *)",
+      "Bash(node scripts/send-reply.js:*)",
+      "Bash(node scripts/send-reply.js *)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git push *)",
+      "Bash(git reset --hard:*)",
+      "Bash(git reset --hard *)"
+    ]
+  }
+}

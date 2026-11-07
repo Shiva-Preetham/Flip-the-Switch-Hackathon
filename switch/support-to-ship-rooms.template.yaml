@@ -1,0 +1,68 @@
+# Support-to-Ship Bridge: the rooms
+#
+# Creates two linked rooms around three agents that already exist:
+#   shoplite-support, shoplite-fixer, shoplite-reviewer
+# (create them first in Switch Console: Your Agents -> +, instructions in switch/agents/).
+#
+#   #shoplite-support      support staff + the support agent
+#   #shoplite-engineering  the support agent (escalating), the fixer and the reviewer
+version: 1
+
+params:
+  bridge:
+    type: bridge
+    description: Where the rooms are mirrored. The server's default app is chosen.
+    default: [$first]
+
+group:
+  name: ShopLite support-to-ship
+  description: Customer tickets in, reviewed fixes out, with people approving each step
+
+rooms:
+  - name: shoplite-support
+    description: Support staff paste customer tickets; the support agent answers or escalates
+    bridge: "{bridge}"
+    agents: ["shoplite-support"]
+    users: ["{$creator}"]
+    instructions: |
+      This is the ShopLite support desk. Support staff paste customer tickets here,
+      starting with the ticket id (T-1234). @shoplite-support answers how-to questions
+      and escalates pricing bugs to shoplite-engineering. Nothing is sent to a customer
+      without a person approving it here.
+    docs:
+      - name: escalation-checklist
+        description: What a good escalation to engineering contains
+        instructions: Read before escalating a ticket.
+        content: |
+          A pricing escalation must include: ticket id, the customer's own words,
+          a quote.js repro command, actual vs expected numbers, and the exact
+          policy line that is violated. One escalation per ticket.
+    kickoff: |
+      @shoplite-support hi. Introduce yourself in one line and say what you will
+      answer here and what you will escalate.
+
+  - name: shoplite-engineering
+    description: The fixer and reviewer work escalated bugs; a person approves every merge
+    bridge: "{bridge}"
+    agents: ["shoplite-support", "shoplite-fixer", "shoplite-reviewer"]
+    users: ["{$creator}"]
+    instructions: |
+      This is ShopLite engineering. Escalations arrive from shoplite-support.
+      @shoplite-fixer reproduces and fixes on a branch with a regression test,
+      @shoplite-reviewer reviews against docs/pricing-policy.md, and a person in
+      this room approves every merge to main. No pushes, no history rewrites.
+    roles:
+      - name: reviewer
+        instructions: Review fixes against the pricing policy. Approve or request changes.
+        exclusive: false
+      - name: merge-captain
+        instructions: The one agent allowed to merge to main, only after review and human approval.
+        exclusive: true
+    kickoff: |
+      @shoplite-fixer @shoplite-reviewer hi. One line each: introduce yourself and
+      your part in the fix flow.
+
+links:
+  - from: shoplite-support
+    to: shoplite-engineering
+    label: escalate pricing bugs
