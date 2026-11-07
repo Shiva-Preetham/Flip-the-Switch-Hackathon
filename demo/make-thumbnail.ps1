@@ -2,7 +2,7 @@
 param(
   [string]$Raw = (Join-Path $PSScriptRoot 'raw\Recording 2026-11-07 135112.mp4'),
   [double]$At = 141.5,
-  [string]$Ffmpeg = "C:\Users\shiva\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe",
+  [string]$Ffmpeg = "ffmpeg",
   [string]$Out = (Join-Path $PSScriptRoot 'thumbnail.png')
 )
 $ErrorActionPreference = 'Stop'
