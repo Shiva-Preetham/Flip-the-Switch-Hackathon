@@ -5,7 +5,11 @@
 
 Built for the **Flip the Switch Hackathon** (WeMakeDevs × DevTools Academy × Switch). Track 01: Best Business Workflow.
 
-> 🎥 Demo video: _add link here_
+### 🎥 [Watch the 2.5-minute demo](https://youtu.be/mUrFossp2F4)
+
+[![Support-to-Ship Bridge demo video](demo/thumbnail.png)](https://youtu.be/mUrFossp2F4)
+
+*A real, unscripted run: a customer ticket goes through reproduction, a fix with a regression test, review, a human-approved merge and a human-approved refund reply. Narration is AI-generated (Kokoro TTS).*
 
 ---
 
@@ -157,6 +161,12 @@ switch/
 scripts/
   setup-workspace.ps1 / .sh   create or reset the agent workspace
   wsl-host-setup.sh           optional: turn WSL Ubuntu into a Switch remote host
+demo/
+  edit-plan.json       the demo video's edit: segments, captions, narration script
+  edit-video.ps1       cuts and speeds up the raw recording, zooms the approvals, adds captions (ffmpeg)
+  tts.py               narration with Kokoro TTS (Apache-2.0), run locally
+  make-thumbnail.ps1   builds the YouTube thumbnail from a real frame
+  thumbnail.png
 track-and-idea-comparison.md  how we chose the track and the idea
 ```
 

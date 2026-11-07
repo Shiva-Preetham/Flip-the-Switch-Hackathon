@@ -1,0 +1,63 @@
+[
+  { "id": "00", "kind": "card", "kicker": "FLIP THE SWITCH HACKATHON  |  TRACK 01: BEST BUSINESS WORKFLOW",
+    "title": "Support-to-Ship Bridge",
+    "body": "Customer complaint in. Tested, reviewed, merged fix out. Customer refunded.\nThree AI agents and two teams, working together in Switch rooms.",
+    "text": "Support to Ship Bridge, built on Switch. A customer complaint becomes a tested, merged fix, and a refund, with A.I. agents and people in team chat." },
+
+  { "id": "00b", "kind": "diagram", "kicker": "HOW IT WORKS",
+    "title": "2 linked Switch rooms  |  3 agents  |  2 human approvals",
+    "text": "Here's how it works. In the support room, the support agent reproduces each ticket and escalates real bugs. In engineering, the fixer writes a failing test and the fix, the reviewer approves, and a person approves the merge. Then support drafts the reply, and a person approves the send." },
+
+  { "id": "01", "kind": "clip", "start": 0.0, "end": 12.0, "zoom": false,
+    "step": "THE SETUP", "caption": "3 Claude Code agents in Switch  +  2 linked Mattermost rooms created from a Switch template",
+    "text": "Three Claude Code agents run in Switch: a support agent, a fixer, and a reviewer. A Switch template created two linked rooms, one for support and one for engineering, with room instructions, roles, and kickoff messages." },
+
+  { "id": "02", "kind": "clip", "start": 24.0, "end": 54.0, "zoom": false,
+    "step": "1  TICKET IN", "caption": "Support pastes ticket T-1043: \"My order was exactly $50 and I was charged $7.99 shipping.\"",
+    "text": "A support person pastes a new ticket. The customer's order was exactly fifty dollars, but they were still charged for shipping, even though shipping is free at fifty dollars or more." },
+
+  { "id": "03", "kind": "clip", "start": 126.0, "end": 132.0, "zoom": false,
+    "step": "2  REPRODUCED + ESCALATED", "caption": "The support agent reproduces it against the pricing policy, confirms the bug and escalates to engineering",
+    "text": "The support agent reproduces the checkout, compares it with the pricing policy, confirms the bug, and escalates it to engineering with a repro." },
+
+  { "id": "04", "kind": "clip", "start": 54.0, "end": 90.0, "zoom": false,
+    "step": "3  FIX + REVIEW", "caption": "Fixer: branch, failing regression tests, fix (> becomes >=), 9/9 pass.  Reviewer: APPROVED",
+    "text": "In the engineering room, the fixer creates a branch, writes regression tests that fail, fixes the boundary check, and hands off for review. The reviewer reads the diff against the policy, runs the tests, and approves." },
+
+  { "id": "05", "kind": "clip", "start": 110.0, "end": 118.0, "zoom": false,
+    "step": "4  HUMAN DECISION", "caption": "Merging to main is a person's call. The engineer says yes in the room.",
+    "text": "Merging to main is a human decision. The engineer says yes, in the room." },
+
+  { "id": "06", "kind": "clip", "start": 134.0, "end": 150.0, "zoom": true,
+    "step": "5  SWITCH APPROVAL GATE: MERGE", "caption": "Switch posts \"Permission needed\" for git merge.  Allow once.  Switch records who approved.",
+    "text": "Switch then posts a permission request for the git merge. The engineer clicks allow once, and Switch records who approved it. The gate is enforced by permission rules, not just a prompt." },
+
+  { "id": "07", "kind": "clip", "start": 150.0, "end": 175.0, "zoom": false,
+    "step": "6  MERGED, LOOP CLOSED", "caption": "Fixer merges, 9/9 tests pass on main, reports back.  Support agent drafts the reply with a $7.99 refund.",
+    "text": "The fixer merges, all nine tests pass on main, and it reports back to support. The support agent drafts the customer reply, with the exact refund of seven ninety nine." },
+
+  { "id": "08", "kind": "clip", "start": 208.0, "end": 222.0, "zoom": false,
+    "step": "7  APPROVE THE REPLY", "caption": "The support person approves the reply in the support room",
+    "text": "Back in the support room, the support person reads the draft and approves it." },
+
+  { "id": "09", "kind": "clip", "start": 230.0, "end": 248.0, "zoom": true,
+    "step": "8  SWITCH APPROVAL GATE: SEND", "caption": "Sending to a customer is gated too: Permission needed, then Allow once",
+    "text": "Sending anything to a customer is gated too. Switch posts a second permission request, this time for the send script, and the support person allows it, once. Again, Switch records who approved." },
+
+  { "id": "10", "kind": "clip", "start": 248.0, "end": 256.0, "zoom": false,
+    "step": "9  DONE", "caption": "Reply sent to the customer.  Ticket closed.",
+    "text": "Reply sent. Ticket closed." },
+
+  { "id": "11", "kind": "clip", "start": 276.0, "end": 286.0, "zoom": false,
+    "step": "PROOF", "caption": "Real git history: two reviewed merges.  The reply in the outbox.",
+    "text": "And it's all real: two reviewed merges in the git history, and the customer reply in the outbox." },
+
+  { "id": "11b", "kind": "scroll", "image": "build/github.png", "toY": 2450, "cropW": 1280, "cropX": 320,
+    "step": "OPEN SOURCE ON GITHUB", "caption": "github.com/Shiva-Preetham/Flip-the-Switch-Hackathon:  demo app, agent instructions, Switch templates, setup scripts",
+    "text": "Everything is on GitHub: the demo app, the agent instructions, the Switch templates, and the setup scripts, so anyone can run it." },
+
+  { "id": "12", "kind": "card", "kicker": "HOW SWITCH IS USED",
+    "title": "2 rooms  |  3 agents  |  2 human approvals",
+    "body": "Linked rooms, room instructions and docs, roles, agent-to-agent handoff,\npermission requests, kickoffs and templates. All in team chat.\n\ngithub.com/Shiva-Preetham/Flip-the-Switch-Hackathon",
+    "text": "Two rooms, three agents, two human approvals. From customer report to tested fix and refund in minutes, with people in control of every irreversible step. Thanks for watching." }
+]
