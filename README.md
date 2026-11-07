@@ -11,6 +11,8 @@ Built for the **Flip the Switch Hackathon** (WeMakeDevs × DevTools Academy × S
 
 *A real, unscripted run: a customer ticket goes through reproduction, a fix with a regression test, review, a human-approved merge and a human-approved refund reply. Narration is AI-generated (Kokoro TTS).*
 
+📝 **Blog post:** [I Built a Support-to-Engineering Pipeline with 3 AI Agents and 2 Human Approvals on Switch](https://dev.to/shiva_preetham/i-built-a-support-to-engineering-pipeline-with-3-ai-agents-and-2-human-approvals-on-switch-4hk0). A step-by-step build guide for first-time Switch users, including the gotchas.
+
 ---
 
 ## The problem
