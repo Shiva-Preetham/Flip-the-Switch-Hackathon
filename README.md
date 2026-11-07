@@ -172,6 +172,12 @@ demo/
 track-and-idea-comparison.md  how we chose the track and the idea
 ```
 
+## What's next
+
+- **Mix agent tools:** run `shoplite-reviewer` on Codex (or a LangChain agent on a server) so two different agent stacks check each other's work in the same room. Switch makes that a config change, not a rewrite.
+- **Approval policies by role:** only the `merge-captain` holder or named engineers can approve a merge.
+- **Help-desk connector** (Zendesk or Intercom), so tickets arrive in #shoplite-support without anyone pasting them.
+
 ## Learnings and notes for the Switch team
 
 - **Windows templates.** In Switch Console 0.40.1 on Windows, a template's *Runs on → This computer* resolves to the machine id, which the Console then tries to reach **over SSH** (`agentTypes.listAvailabilityRemote: host unreachable`, `sshHost: <machine-uuid>`). Every provider shows "Not supported here", although agents created from **Your Agents → +** on the same machine run fine. That's why this repo ships both the one-shot template and an agents-by-hand + rooms-template path.
